@@ -192,6 +192,44 @@ const nuevoPassword = async (req, res) => {
     });
   }
 };
+const actualizarPerfil = async (req, res) => {
+  try {
+    const veterinario = await Veterinario.findById(req.params.id);
+    if (!veterinario) {
+      const error = new Error("Usuario no encontrado.");
+      return res.status(400).json({
+        susecces: false,
+        msg: error.message,
+      });
+    }
+    const { email } = req.body;
+    if (veterinario.email !== req.body.email) {
+      const existeEmail = await Veterinario.findOne({ email });
+      if (existeEmail) {
+        const error = new Error("El email ya esta en uso.");
+        return res.status(400).json({
+          susecces: false,
+          msg: error.message,
+        });
+      }
+    }
+    veterinario.nombre = req.body.nombre;
+    veterinario.email = req.body.email;
+    veterinario.telefono = req.body.telefono;
+    veterinario.web = req.body.web;
+    const veterinarioActulaizado = await veterinario.save();
+    return res.status(200).json({
+      susecces: true,
+      veterinarioActulaizado,
+    });
+  } catch (error) {
+    console.log(`ERROR: ${error}`);
+    return res.status(500).json({
+      susecces: false,
+      msg: "Ha ocurrido un error.",
+    });
+  }
+};
 // EXPORT FUNCTIONS
 export {
   registrar,
@@ -201,4 +239,5 @@ export {
   olvidePassword,
   comprovarToken,
   nuevoPassword,
+  actualizarPerfil,
 };

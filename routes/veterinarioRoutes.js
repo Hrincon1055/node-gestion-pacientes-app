@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  actualizarPerfil,
   autenticar,
   comprovarToken,
   confirmar,
@@ -20,5 +21,5 @@ router.post("/olvide-password", olvidePassword);
 router.route("/olvide-password/:token").get(comprovarToken).post(nuevoPassword);
 // RUTAS PRIVADAS
 router.get("/perfil", checkAuth, perfil);
-
+router.put("/perfil/:id", checkAuth, actualizarPerfil);
 export default router;
