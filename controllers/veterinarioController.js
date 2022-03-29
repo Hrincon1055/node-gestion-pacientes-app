@@ -230,6 +230,40 @@ const actualizarPerfil = async (req, res) => {
     });
   }
 };
+const actualizarPassword = async (req, res) => {
+  const { id } = req.veterinario;
+  const { pwd_actual, pwd_nuevo } = req.body;
+  try {
+    const veterinario = await Veterinario.findById(id);
+    if (!veterinario) {
+      const error = new Error("Usuario no encontrado.");
+      return res.status(400).json({
+        susecces: false,
+        msg: error.message,
+      });
+    }
+    if (await veterinario.comprobarPassword(pwd_actual)) {
+      veterinario.password = pwd_nuevo;
+      await veterinario.save();
+      return res.status(200).json({
+        susecces: true,
+        msg: "Passwor actualizado.",
+      });
+    } else {
+      const error = new Error("El password actual es incorrecto.");
+      return res.status(400).json({
+        susecces: false,
+        msg: error.message,
+      });
+    }
+  } catch (error) {
+    console.log(`ERROR: ${error}`);
+    return res.status(500).json({
+      susecces: false,
+      msg: "Ha ocurrido un error.",
+    });
+  }
+};
 // EXPORT FUNCTIONS
 export {
   registrar,
@@ -240,4 +274,5 @@ export {
   comprovarToken,
   nuevoPassword,
   actualizarPerfil,
+  actualizarPassword,
 };
